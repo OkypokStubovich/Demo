@@ -1,0 +1,66 @@
+#include <iostream>  // Подключаем библиотеку для ввода/вывода (cout, cin)
+#include <cmath>     // Подключаем библиотеку для математических функций (sin, cos)
+
+using namespace std; // Используем пространство имен std, чтобы не писать std:: перед каждой командой
+
+// Функция для вычисления значения переменной 'a' по формуле: a = 1 + x + x²/2 + x³/3 + x⁴/4
+double calculateA(double x) {
+    double xSquared = x * x;       // Вычисляем x² (x в квадрате)
+    double xCubed = x * x * x;     // Вычисляем x³ (x в кубе)
+    double xFourth = x * x * x * x; // Вычисляем x⁴ (x в четвертой степени)
+
+    // Вычисляем 'a' по формуле, складывая все компоненты
+    double a = 1 + x + (xSquared / 2) + (xCubed / 3) + (xFourth / 4);
+
+    return a; // Возвращаем полученное значение
+}
+
+// Функция для вычисления части выражения для 'b': sin(x³) + cos²(y)
+double calculateBPart(double x, double y) {
+    double xCubed = x * x * x;         // Вычисляем x³
+    double sinXCubed = sin(xCubed);    // Вычисляем sin(x³)
+    double cosY = cos(y);              // Вычисляем cos(y)
+    double cosYSquared = cosY * cosY;  // Вычисляем cos²(y) (квадрат косинуса y)
+
+    // Складываем sin(x³) и cos²(y)
+    double bPart = sinXCubed + cosYSquared;
+
+    return bPart; // Возвращаем результат
+}
+
+// Функция для вычисления значения переменной 'b' по формуле: b = x * (sin(x³) + cos²(y))
+double calculateB(double x, double y) {
+    double bPart = calculateBPart(x, y); // Вычисляем часть выражения для 'b'
+    double b = x * bPart;                // Умножаем на x
+
+    return b; // Возвращаем итоговое значение 'b'
+}
+
+// Функция для вывода исходных данных и результатов вычислений
+void printResults(double x, double y, double a, double b) {
+    cout << "Исходные данные:" << endl;
+    cout << "x = " << x << endl;  // Выводим значение x
+    cout << "y = " << y << endl;  // Выводим значение y
+
+    cout << "\nРезультаты вычислений:" << endl;
+    cout << "a = " << a << endl;  // Выводим значение a
+    cout << "b = " << b << endl;  // Выводим значение b
+}
+
+// Главная функция программы
+int main() {
+    // Задаем константы по условию задачи
+    double x = 0.335; // Значение переменной x
+    double y = 0.025; // Значение переменной y
+
+    // Вычисляем 'a' с помощью функции calculateA()
+    double a = calculateA(x);
+
+    // Вычисляем 'b' с помощью функции calculateB()
+    double b = calculateB(x, y);
+
+    // Выводим результаты с помощью функции printResults()
+    printResults(x, y, a, b);
+
+    return 0; // Завершаем программу с кодом 0 (успешное выполнение)
+}
