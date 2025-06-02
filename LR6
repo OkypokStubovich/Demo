@@ -1,0 +1,76 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+// Функция для заполнения массива случайными числами в заданном интервале
+void fillRandom(int arr[], const size_t size, int minVal, int maxVal) {
+    for (size_t i = 0; i < size; i++) {
+        arr[i] = rand() % (maxVal - minVal + 1) + minVal;
+    }
+}
+
+// Функция для заполнения массива с клавиатуры с проверкой интервала
+void fillKeyboard(int arr[], const size_t size, int minVal, int maxVal) {
+    cout << "Введите " << size << " элементов массива (целые числа от " 
+         << minVal << " до " << maxVal << "):" << endl;
+    for (size_t i = 0; i < size; i++) {
+        cin >> arr[i];
+        if (arr[i] < minVal || arr[i] > maxVal) {
+            cout << "Ошибка: число должно быть в диапазоне [" 
+                 << minVal << ", " << maxVal << "]" << endl;
+            i--; // Повторяем ввод для этого элемента
+        }
+    }
+}
+
+// Остальные функции (printArray, sumOfEven и т.д.) остаются без изменений
+// ...
+
+int main() {
+    srand(time(0));
+
+    size_t n;
+    int minVal, maxVal;
+
+    // Ввод интервала с клавиатуры
+    cout << "Введите нижнюю границу интервала: ";
+    cin >> minVal;
+    cout << "Введите верхнюю границу интервала: ";
+    cin >> maxVal;
+
+    if (minVal > maxVal) {
+        cout << "Ошибка: нижняя граница должна быть меньше верхней!" << endl;
+        return 1;
+    }
+
+    cout << "Введите размер массива: ";
+    cin >> n;
+
+    int* arr = new int[n];
+
+    enum FillMethod { RANDOM = 'r', KEYBOARD = 'k' };
+    char choice;
+
+    cout << "Выберите способ заполнения массива (r - случайные числа, k - с клавиатуры): ";
+    cin >> choice;
+
+    switch (choice) {
+        case RANDOM:
+            fillRandom(arr, n, minVal, maxVal);
+            break;
+        case KEYBOARD:
+            fillKeyboard(arr, n, minVal, maxVal);
+            break;
+        default:
+            cout << "Некорректный выбор!" << endl;
+            delete[] arr;
+            return 1;
+    }
+
+    // Далее идут вызовы остальных функций...
+
+    delete[] arr;
+    return 0;
+}
