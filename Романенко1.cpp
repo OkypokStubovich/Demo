@@ -1,38 +1,43 @@
 #include <iostream> 
 #include <cmath>
-#define _use_math_defines //for c++
 
 using namespace std;
+
 /**
-*@brief - Функция для вычисления А по заданному уравнению
-*@param х - значение переменной х
-*@param у - значение переменной у
-*@return- возвращает рассчитанное значение
+* @brief Функция для вычисления значения a по заданной формуле
+* @param x - значение переменной x
+* @return возвращает рассчитанное значение a
 */
-double getA(const double x, const double y);
+double calculateA(double x);
+
 /**
-*@brief - Функция для вычисления А по заданному уравнению
-*@param х - значение переменной х
-*@param у - значение переменной у
-*@return- возвращает рассчитанное значение
+* @brief Функция для вычисления значения b по заданной формуле
+* @param x - значение переменной x
+* @param y - значение переменной y
+* @return возвращает рассчитанное значение b
 */
-double getB(const double x, const double y);
-/**
-*@brief - Точко входа в программу
-*@return - возвращает 0, если программа выполнена корректно 
-*/
+double calculateB(double x, double y);
+
 int main() {
-    const double x = 0.335; 
-    const double y = 0.025; 
-    cout << "a = " << getA(x,y) << endl; 
-    cout << "b = " << getB(x,y); 
+    // Значения из задания
+    const double x = 0.335;
+    const double y = 0.025;
+    
+    // Вычисление и вывод результатов
+    cout << "a = " << calculateA(x) << endl;
+    cout << "b = " << calculateB(x, y) << endl;
+    
     return 0;
 }
-double getA(const double x, const double y)
-{
-    return(1 + x + ((pow(x, 2)) / 2) + ((pow(x, 3)) / 3) + ((pow(x, 4)) / 4));
+
+double calculateA(double x) {
+    // Вычисляем a = 1 + x + x²/2 + x³/3 + x⁴/4
+    return 1 + x + (x*x)/2 + (x*x*x)/3 + (x*x*x*x)/4;
 }
-double getB(const double x, const double y)
-{
-    return(x * (sin(pow(x, 3)) + pow(cos(y), 2)));
+
+double calculateB(double x, double y) {
+    // Вычисляем b = x*(sin(x³) + cos²(y))
+    double x_cubed = x * x * x;
+    double cos_y = cos(y);
+    return x * (sin(x_cubed) + cos_y*cos_y);
 }
