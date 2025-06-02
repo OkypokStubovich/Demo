@@ -1,116 +1,72 @@
 #include <iostream>
 #include <cmath>
-#include <vector>
-#include <stdexcept>
+#include <limits>
 
 using namespace std;
 
 // Функция для вычисления значения y(x)
 double calculateY(double x) {
-    // Проверяем, что x положительный, так как ln(x) определен только для x > 0
-    if (x <= 0) {
-        throw invalid_argument("x должен быть положительным");
-    }
-    
     double ln_x = log(x); // Вычисляем натуральный логарифм x
     return sin(ln_x) - cos(ln_x) + 2 * ln_x;
 }
 
-// Функция для табулирования функции на заданном интервале
-void tabulateFunction(double start, double end, double step, vector<double>& x_values, vector<double>& y_values) {
-    // Очищаем векторы для хранения результатов
-    x_values.clear();
-    y_values.clear();
-    
-    // Проверяем корректность входных параметров
-    if (start <= 0) {
-        throw invalid_argument("Начальное значение x должно быть положительным");
-    }
-    if (step <= 0) {
-        throw invalid_argument("Шаг должен быть положительным");
-    }
-    if (start > end) {
-        throw invalid_argument("Начальное значение x должно быть меньше конечного");
-    }
-    
-    // Табулируем функцию
-    for (double x = start; x <= end + 1e-9; x += step) {
-        try {
-            double y = calculateY(x);
-            x_values.push_back(x);
-            y_values.push_back(y);
-        } catch (const invalid_argument& e) {
-            cout << "Ошибка при x = " << x << ": " << e.what() << " - пропускаем эту точку" << endl;
-        }
-    }
-}
-
-// Простая функция для округления чисел при выводе
+// Функция для вывода числа с округлением до 4 знаков
 void printNumber(double num) {
     // Округляем до 4 знаков после запятой
     double rounded = round(num * 10000) / 10000;
     
     // Выводим целую часть
-    int int_part = static_cast<int>(rounded);
-    cout << int_part;
+    cout << static_cast<int>(rounded);
     
     // Выводим дробную часть, если она есть
-    double fractional = rounded - int_part;
-    if (fractional != 0) {
+    double fractional = rounded - static_cast<int>(rounded);
+    if (abs(fractional) > numeric_limits<double>::epsilon()) {
         cout << ".";
-        // Выводим до 4 знаков после запятой
-        for (int i = 0; i < 4; i++) {
-            fractional *= 10;
-            int digit = static_cast<int>(fractional) % 10;
-            cout << digit;
-        }
+        // Выводим 4 знака после запятой
+        fractional *= 10000;
+        int digits = static_cast<int>(round(fractional));
+        printf("%04d", digits);
     }
 }
 
 int main() {
-    // Параметры табулирования по умолчанию (из задания)
-    double start = 1.0;
-    double end = 3.0;
-    double step = 0.2;
+    double start, end, step;
     
-    // Векторы для хранения результатов
-    vector<double> x_values, y_values;
+    // Ввод параметров с клавиатуры
+    cout << "Введите начальное значение x: ";
+    cin >> start;
+    cout << "Введите конечное значение x: ";
+    cin >> end;
+    cout << "Введите шаг табулирования: ";
+    cin >> step;
     
-    try {
-        // Табулируем функцию
-        tabulateFunction(start, end, step, x_values, y_values);
-        
-        // Выводим заголовок таблицы
-        cout << "Табулирование функции y = sin(ln x) - cos(ln x) + 2ln x" << endl;
-        cout << "на интервале [" << start << ", " << end << "] с шагом " << step << endl << endl;
-        cout << "     x          y(x)" << endl;
-        cout << "---------------------" << endl;
-        
-        // Выводим результаты
-        for (size_t i = 0; i < x_values.size(); ++i) {
-            // Выводим x с выравниванием
-            cout << " ";
-            printNumber(x_values[i]);
-            
-            // Выводим y(x) с выравниванием
-            cout << "     ";
-            printNumber(y_values[i]);
-            cout << endl;
-        }
-        
-        // Сообщение для построения графика
-        cout << endl << "Для построения графика скопируйте данные в Excel или другое приложение:" << endl;
-        cout << "x\ty" << endl;
-        for (size_t i = 0; i < x_values.size(); ++i) {
-            printNumber(x_values[i]);
-            cout << "\t";
-            printNumber(y_values[i]);
-            cout << endl;
-        }
-        
-    } catch (const invalid_argument& e) {
-        cout << "Ошибка: " << e.what() << endl;
+    // Проверка корректности шага
+    if (step <= 0) {
+        cout << "Ошибка: шаг должен быть положительным" << endl;
         return 1;
+    }
+    
+    // Вывод заголовка таблицы
+    cout << "\nТабулирование функции y = sin(ln x) - cos(ln x) + 2ln x\n";
+    cout << "на интервале [" << start << ", " << end << "] с шагом " << step << "\n\n";
+    cout << "     x          y(x)\n";
+    cout << "---------------------\n";
+    
+    // Табулирование и вывод результатов
+    for (double x = start; x <= end + numeric_limits<double>::epsilon(); x += step) {
+        // Проверка, что x положительный
+        if (x > 0) {
+            double y = calculateY(x);
+            
+            // Вывод x
+            cout << " ";
+            printNumber(x);
+            
+            // Вывод y(x)
+            cout << "     ";
+            printNumber(y);
+            cout << endl;
+        }
     }
     
     return 0;
