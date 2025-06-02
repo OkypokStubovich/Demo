@@ -3,9 +3,12 @@
 
 using namespace std;
 
-double calculateSeries(int n) {
-    double sum = 0;
-    double term = -1.0; // Первый член ряда при k=1: (-1)^1 / (1!)^2 = -1
+// Функция для вычисления суммы ряда 
+double calculateSeriesSum(int n) {
+    if (n < 1) return 0;
+    
+    double sum = 0.0;
+    double term = -1.0; // Первый член ряда (k=1): (-1)^1/(1!)^2 = -1/1 = -1
     
     for (int k = 1; k <= n; k++) {
         sum += term;
@@ -16,16 +19,40 @@ double calculateSeries(int n) {
     return sum;
 }
 
+// Функция для вычисления суммы членов ряда, больших по модулю e
+double calculateSumAboveEpsilon(double epsilon) {
+    if (epsilon <= 0) return 0;
+    
+    double sum = 0.0;
+    double term = -1.0; // Первый член
+    int k = 1;
+    
+    while (fabs(term) >= epsilon) {
+        sum += term;
+        k++;
+        term = -term / (k*k);
+    }
+    
+    return sum;
+}
+
 int main() {
     int n;
-    cout << "Введите n: ";
+    double epsilon;
+    
+    cout << "Введите количество членов ряда n: ";
     cin >> n;
     
-    if (n < 1) {
-        cout << "Ошибка: n должно быть положительным" << endl;
+    cout << "Введите точность epsilon: ";
+    cin >> epsilon;
+    
+    if (n < 1 || epsilon <= 0) {
+        cout << "Ошибка ввода данных!" << endl;
         return 1;
     }
     
-    cout << "Сумма ряда: " << calculateSeries(n) << endl;
+    cout << "Сумма первых " << n << " членов: " << calculateSeriesSum(n) << endl;
+    cout << "Сумма членов с |a_k| >= " << epsilon << ": " << calculateSumAboveEpsilon(epsilon) << endl;
+    
     return 0;
 }
