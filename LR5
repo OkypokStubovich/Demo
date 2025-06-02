@@ -1,0 +1,83 @@
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+// Функция для вычисления суммы первых n членов ряда (вариант 4)
+long double sum_n_terms(int n) {
+    if (n < 1) {
+        cout << "Ошибка: n должно быть положительным числом!" << endl;
+        return 0;
+    }
+    
+    long double sum = 0.0;
+    long double term;
+    long double k_fact_squared = 1.0; // (k!)^2, начинаем с k=1 (1!^2 = 1)
+    
+    for (int k = 1; k <= n; ++k) {
+        // Вычисляем текущий член ряда: (-1)^k / (k!)^2
+        term = (k % 2 == 0 ? 1.0 : -1.0) / k_fact_squared;
+        sum += term;
+        
+        // Обновляем (k!)^2 для следующей итерации: ((k+1)!)^2 = (k! * (k+1))^2 = (k!)^2 * (k+1)^2
+        k_fact_squared *= (k+1) * (k+1);
+    }
+    
+    return sum;
+}
+
+// Функция для вычисления суммы членов ряда, не меньших по модулю e (вариант 4)
+long double sum_terms_above_e(long double e) {
+    if (e <= 0) {
+        cout << "Ошибка: e должно быть положительным числом!" << endl;
+        return 0;
+    }
+    
+    long double sum = 0.0;
+    long double term;
+    int k = 1;
+    long double k_fact_squared = 1.0; // (1!)^2 = 1
+    
+    // Вычисляем первый член ряда
+    term = -1.0 / k_fact_squared; // Для k=1: (-1)^1 / (1!)^2 = -1/1
+    
+    // Продолжаем, пока модуль члена ряда не меньше e
+    while (fabs(term) >= e) {
+        sum += term;
+        k++;
+        
+        // Обновляем (k!)^2
+        k_fact_squared *= k * k;
+        
+        // Вычисляем следующий член
+        term = (k % 2 == 0 ? 1.0 : -1.0) / k_fact_squared;
+    }
+    
+    return sum;
+}
+
+int main() {
+    int n;
+    long double e;
+    
+    // Ввод данных с проверкой
+    cout << "Введите количество членов ряда n (целое положительное число): ";
+    cin >> n;
+    
+    cout << "Введите минимальное значение члена ряда e (положительное число): ";
+    cin >> e;
+    
+    // Проверка ввода
+    if (n < 1 || e <= 0) {
+        cout << "Некорректный ввод!" << endl;
+        return 1;
+    }
+    
+    // Вычисление и вывод результатов
+    cout << fixed << setprecision(15); // Устанавливаем высокую точность вывода
+    cout << "Сумма первых " << n << " членов ряда: " << sum_n_terms(n) << endl;
+    cout << "Сумма членов ряда с |член| >= " << e << ": " << sum_terms_above_e(e) << endl;
+    
+    return 0;
+}
