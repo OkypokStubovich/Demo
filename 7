@@ -1,0 +1,179 @@
+#include <iostream>
+#include <cstdlib> // для rand() и srand()
+#include <ctime>   // для time()
+#include <climits> // для INT_MAX и INT_MIN
+#include <vector>  // для работы с векторами
+
+using namespace std;
+
+// Функция для заполнения массива случайными числами
+void fillRandom(int** arr, int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            arr[i][j] = rand() % 100; // случайные числа от 0 до 99
+        }
+    }
+}
+
+// Функция для заполнения массива с клавиатуры
+void fillKeyboard(int** arr, int rows, int cols) {
+    cout << "Введите " << rows * cols << " целых чисел:" << endl;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            cin >> arr[i][j];
+        }
+    }
+}
+
+// Функция для вывода массива на экран
+void printArray(int** arr, int rows, int cols) {
+    cout << "Массив (" << rows << "x" << cols << "):" << endl;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            cout << arr[i][j] << "\t";
+        }
+        cout << endl;
+    }
+}
+
+// 1. Замена минимального по модулю элемента каждого столбца на противоположный
+void replaceMinAbsElements(int** arr, int rows, int cols) {
+    for (int j = 0; j < cols; j++) { // перебираем столбцы
+        int minAbs = abs(arr[0][j]); // начальное минимальное значение
+        int minRow = 0;             // строка с минимальным элементом
+        
+        // Находим минимальный по модулю элемент в столбце
+        for (int i = 1; i < rows; i++) {
+            if (abs(arr[i][j]) < minAbs) {
+                minAbs = abs(arr[i][j]);
+                minRow = i;
+            }
+        }
+        
+        // Заменяем на противоположный
+        arr[minRow][j] = -arr[minRow][j];
+    }
+}
+
+// 2. Удаление строк, содержащих максимальные элементы
+void removeRowsWithMaxElements(int** &arr, int &rows, int cols) {
+    // Сначала находим максимальный элемент во всем массиве
+    int maxElement = arr[0][0];
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            if (arr[i][j] > maxElement) {
+                maxElement = arr[i][j];
+            }
+        }
+    }
+    
+    // Определяем, какие строки нужно удалить (содержат maxElement)
+    vector<bool> rowsToKeep(rows, true);
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            if (arr[i][j] == maxElement) {
+                rowsToKeep[i] = false;
+                break;
+            }
+        }
+    }
+    
+    // Считаем сколько строк останется
+    int newRows = 0;
+    for (bool keep : rowsToKeep) {
+        if (keep) newRows++;
+    }
+    
+    // Если все строки удаляются, оставляем одну пустую
+    if (newRows == 0) {
+        newRows = 1;
+        rowsToKeep[0] = true;
+    }
+    
+    // Создаем новый массив
+    int** newArr = new int*[newRows];
+    for (int i = 0; i < newRows; i++) {
+        newArr[i] = new int[cols];
+    }
+    
+    // Копируем нужные строки
+    int newIndex = 0;
+    for (int i = 0; i < rows; i++) {
+        if (rowsToKeep[i]) {
+            for (int j = 0; j < cols; j++) {
+                newArr[newIndex][j] = arr[i][j];
+            }
+            newIndex++;
+        }
+    }
+    
+    // Удаляем старый массив
+    for (int i = 0; i < rows; i++) {
+        delete[] arr[i];
+    }
+    delete[] arr;
+    
+    // Обновляем указатель и количество строк
+    arr = newArr;
+    rows = newRows;
+}
+
+int main() {
+    srand(time(0)); // инициализация генератора случайных чисел
+    
+    int rows, cols;
+    cout << "Введите количество строк и столбцов массива (n m): ";
+    cin >> rows >> cols;
+    
+    if (rows <= 0 || cols <= 0) {
+        cout << "Некорректные размеры массива!" << endl;
+        return 1;
+    }
+    
+    // Создаем массив
+    int** arr = new int*[rows];
+    for (int i = 0; i < rows; i++) {
+arr[i] = new int[cols];
+    }
+    
+    // Выбор способа заполнения
+    char choice;
+    cout << "Выберите способ заполнения (r - случайные, k - клавиатура): ";
+    cin >> choice;
+    
+    if (choice == 'r') {
+        fillRandom(arr, rows, cols);
+    } else if (choice == 'k') {
+        fillKeyboard(arr, rows, cols);
+    } else {
+        cout << "Некорректный выбор!" << endl;
+        // Освобождаем память перед выходом
+        for (int i = 0; i < rows; i++) {
+            delete[] arr[i];
+        }
+        delete[] arr;
+        return 1;
+    }
+    
+    // Выводим исходный массив
+    cout << "\nИсходный массив:" << endl;
+    printArray(arr, rows, cols);
+    
+    // 1. Заменяем минимальные по модулю элементы
+    replaceMinAbsElements(arr, rows, cols);
+    cout << "\nПосле замены минимальных по модулю элементов:" << endl;
+    printArray(arr, rows, cols);
+    
+    // 2. Удаляем строки с максимальными элементами
+    removeRowsWithMaxElements(arr, rows, cols);
+    cout << "\nПосле удаления строк с максимальными элементами:" << endl;
+    printArray(arr, rows, cols);
+    
+    // Освобождаем память
+    for (int i = 0; i < rows; i++) {
+        delete[] arr[i];
+    }
+    delete[] arr;
+    
+    return 0;
+}
