@@ -10,7 +10,7 @@ using namespace std;
 * @param y - значение переменной у
 * @return возвращает рассчитанное значение a
 */
-double calculateA(double x, double y);
+double calculateA( const double x);
 
 /**
 * @brief Функция для вычисления значения b по заданной формуле
@@ -32,15 +32,11 @@ int main() {
     return 0;
 }
 
-double calculateA(double x, double y) {
     // Вычисляем a = 1 + x + x²/2 + x³/3 + x⁴/4
-    (void)y;
     return 1 + x + (x*x)/2 + (x*x*x)/3 + (x*x*x*x)/4;
 }
 
-double calculateB(double x, double y) {
-    // Вычисляем b = x*(sin(x³) + cos²(y))
-    double x_cubed = x * x * x;
-    double cos_y = cos(y);
+double calculateB( const double x, const double y) {
+    // Вычисляем b = x*(sin(x³) + cos²(y)
     return x * (sin(x_cubed) + cos_y*cos_y);
 }
